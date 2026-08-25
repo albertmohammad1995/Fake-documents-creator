@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Adsgram SDK Script -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -124,7 +123,6 @@
                 <option value="India">🇮🇳 ভারত (India)</option>
             </select>
 
-            <!-- Dynamic Bank Selection for Bangladesh Bank Statement -->
             <div id="bankGroup" class="hidden">
                 <label>Select Bank / ব্যাংক নির্বাচন করুন:</label>
                 <select id="bankSelect">
@@ -141,7 +139,6 @@
             <label>New Date (তারিখ):</label>
             <input type="date" id="newDateInput">
 
-            <!-- File Upload Group (Will be hidden for Bangladesh Utility Bills & Bank Statements) -->
             <div id="fileGroup">
                 <label>Upload Demo Document (ডেমো ফাইল):</label>
                 <input type="file" id="demoFile">
@@ -200,7 +197,6 @@
                         callback();
                     });
             } else {
-                console.log("AdController not initialized. Proceeding directly.");
                 callback();
             }
         }
@@ -277,14 +273,24 @@
                 details += ` (${bank})`;
             }
 
-            let requestData = JSON.stringify({
-                category: details,
-                country: country,
-                name: name,
-                date: date,
-                time: new Date().toLocaleString()
-            });
+            // ইউজারের তথ্য সংগ্রহ
+            let user = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : { first_name: "User", username: "N/A", id: "N/A" };
+            
+            let messageText = `📥 *নতুন ডকুমেন্ট রিকোয়েস্ট পাওয়া গেছে!*\n\n` +
+                              `👤 *ইউজার:* ${user.first_name} (@${user.username || 'N/A'})\n` +
+                              `🔹 *ক্যাটেগরি:* ${details}\n` +
+                              `🌍 *দেশ:* ${country}\n` +
+                              `📝 *নাম:* ${name}\n` +
+                              `📅 *তারিখ:* ${date}\n` +
+                              `⏰ *সময়:* ${new Date().toLocaleString()}`;
 
+            // আপনার বটের টোকেন এবং আপনার টেলিগ্রাম চ্যাট আইডি এখানে যুক্ত করা হলো যাতে সরাসরি নোটিফিকেশন পান
+            let botToken = "8834569438:AAHbBg4ZiERupKvSjjC7QFpj89H4nm-IQSI";
+            
+            // আপনার নিজস্ব টেলিগ্রাম আইডি বা এডমিন আইডি এখানে বসাতে পারেন অথবা ইউজারের চ্যাটে পাঠাতে পারেন। 
+            // যেহেতু মিনি অ্যাপ থেকে সরাসরি এডমিনের কাছে পাঠাতে চান, আপনার নিজস্ব চ্যাট আইডি এখানে বসিয়ে দিতে পারেন বা বটের মাধ্যমে ফরওয়ার্ড করতে পারেন।
+            // সহজ উপায়ে ইউজারের টেলিগ্রাম চ্যাট বা বটের নিজস্ব লজিক ব্যবহার করার জন্য Fetch API ব্যবহার করা হচ্ছে:
+            
             // লোকাল স্টোরেজে ফাইল সেভ করা
             let savedFiles = JSON.parse(localStorage.getItem('myDocsFiles')) || [];
             savedFiles.push({
@@ -303,12 +309,26 @@
             document.getElementById('newNameInput').value = '';
             document.getElementById('newDateInput').value = '';
 
-            // টেলিগ্রামে ডেটা পাঠানো এবং মিনি অ্যাপ ক্লোজ করা
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-                window.Telegram.WebApp.sendData(requestData);
+            // টেলিগ্রাম মিনি অ্যাপ বন্ধ করে দেওয়া এবং নোটিফিকেশনের জন্য ডেটা পাঠানো
+            if (user.id !== "N/A") {
+                // বটের টোকেন দিয়ে সরাসরি ইউজারের চ্যাটে কনফার্মেশন বা এডমিনের কাছে পাঠানোর ব্যবস্থা
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: user.id, // এটি ইউজারের নিজের চ্যাটে বা আপনি চাইলে আপনার এডমিন আইডি বসাতে পারেন
+                        text: messageText,
+                        parse_mode: "Markdown"
+                    })
+                }).then(() => {
+                    tg.close();
+                }).catch(() => {
+                    tg.close();
+                });
             } else {
                 alert("আপনার রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে এবং মাই ফাইলসে সেভ করা হয়েছে!");
                 loadMyFiles();
+                tg.close();
             }
         }
 
