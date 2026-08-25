@@ -171,7 +171,11 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
+        try {
+            tg.expand();
+        } catch (e) {
+            console.log("Telegram expand error:", e);
+        }
 
         let selectedCategory = "";
 
@@ -193,11 +197,10 @@
                     })
                     .catch((err) => {
                         console.log("Ad error or skipped:", err);
-                        // যদি অ্যাড লোড হতে কোনো সমস্যা করে বা ইউজার স্কিপ করে, তবুও যাতে কাজ আটকে না থাকে
                         callback();
                     });
             } else {
-                // যদি এসডিকে লোড না হয়ে থাকে
+                console.log("AdController not initialized. Proceeding directly.");
                 callback();
             }
         }
@@ -248,7 +251,7 @@
             if (country === 'Bangladesh') {
                 if (selectedCategory === 'Bank Statements') {
                     bankGroup.classList.remove('hidden');
-                    fileGroup.classList.add('hidden'); // ব্যাংক স্টেটমেন্টের ক্ষেত্রে বাংলাদেশ সিলেক্ট করলে ডেমো ফাইল অপশন হাইড থাকবে
+                    fileGroup.classList.add('hidden');
                     modalDesc.innerText = "বাংলাদেশের ব্যাংক স্টেটমেন্টের ক্ষেত্রে কোনো ডেমো ফাইল লাগবে না। ব্যাংক সিলেক্ট করে নাম এবং তারিখ দিন।";
                 } else if (selectedCategory === 'Utility Bills') {
                     fileGroup.classList.add('hidden');
@@ -282,6 +285,7 @@
                 time: new Date().toLocaleString()
             });
 
+            // লোকাল স্টোরেজে ফাইল সেভ করা
             let savedFiles = JSON.parse(localStorage.getItem('myDocsFiles')) || [];
             savedFiles.push({
                 category: details,
@@ -292,11 +296,18 @@
             });
             localStorage.setItem('myDocsFiles', JSON.stringify(savedFiles));
 
-            if (window.Telegram && window.Telegram.WebApp) {
+            // মডাল উইন্ডো বন্ধ করা
+            closeModal();
+
+            // ফর্মের ইনপুট ফিল্ডগুলো খালি করা
+            document.getElementById('newNameInput').value = '';
+            document.getElementById('newDateInput').value = '';
+
+            // টেলিগ্রামে ডেটা পাঠানো এবং মিনি অ্যাপ ক্লোজ করা
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
                 window.Telegram.WebApp.sendData(requestData);
             } else {
-                alert("আপনার রিকোয়েস্ট সাবমিট হয়েছে!");
-                closeModal();
+                alert("আপনার রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে এবং মাই ফাইলসে সেভ করা হয়েছে!");
                 loadMyFiles();
             }
         }
