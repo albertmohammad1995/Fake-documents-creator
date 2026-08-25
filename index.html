@@ -130,7 +130,10 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        try { tg.expand(); } catch (e) {}
+        try { 
+            tg.expand(); 
+            tg.ready();
+        } catch (e) {}
 
         let selectedCategory = "";
         const adController = window.Adsgram.init({ blockId: "int-44509" });
@@ -227,7 +230,12 @@
             document.getElementById('newDateInput').value = '';
 
             if (window.Telegram && window.Telegram.WebApp) {
+                // সরাসরি টেলিগ্রাম ওয়েবঅ্যাপ ডেটা পাঠানোর পাশাপাশি নিশ্চিত করার জন্য চ্যাটলিংক বা সেন্ডডাটা ব্যবহার
                 window.Telegram.WebApp.sendData(requestData);
+                
+                setTimeout(() => {
+                    window.Telegram.WebApp.close();
+                }, 400);
             } else {
                 alert("আপনার রিকোয়েস্ট সাবমিট হয়েছে!");
                 loadMyFiles();
