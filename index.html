@@ -175,10 +175,9 @@
 
         let selectedCategory = "";
 
-        // Adsgram Controller Setup with your Block ID: int-44438
-        const adController = window.Adsgram.init({ blockId: "int-44438" });
+        // Updated with the new Adsgram Block ID
+        const adController = window.Adsgram.init({ blockId: "int-44509" });
 
-        // Function to handle first-time click ad show for Bank & Utility
         function handleCardClick(docType) {
             let adShownKey = "ad_shown_" + docType.replace(/\s+/g, '_');
             let hasShownAd = localStorage.getItem(adShownKey);
@@ -234,7 +233,7 @@
 
         function submitRequest() {
             let country = document.getElementById('countrySelect').value;
-            let name = document.getElementById('newNameInput').value;
+            let name = document.getElementById('newNameInput -> value' || 'newNameInput').value;
             let date = document.getElementById('newDateInput').value;
             let bank = document.getElementById('bankSelect').value;
 
@@ -248,7 +247,6 @@
                 details += ` (${bank})`;
             }
 
-            // Telegram Bot এ ডেটা পাঠানোর জন্য প্যাকেট তৈরি
             let requestData = JSON.stringify({
                 category: details,
                 country: country,
@@ -257,7 +255,6 @@
                 time: new Date().toLocaleString()
             });
 
-            // Local storage এও সেভ রাখা
             let savedFiles = JSON.parse(localStorage.getItem('myDocsFiles')) || [];
             savedFiles.push({
                 category: details,
@@ -268,15 +265,14 @@
             });
             localStorage.setItem('myDocsFiles', JSON.stringify(savedFiles));
 
-            // টেলিগ্রাম বটে ডেটা সেন্ড করা
+            // লোকাল স্টোরেজে সেভ করার পর সরাসরি টেলিগ্রাম বটে ডেটা পাঠিয়ে অ্যাপ ক্লোজ করে দেওয়া
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.sendData(requestData);
             } else {
-                alert("It will take from 5 to 30 minutes to complete the task.");
+                alert("আপনার রিকোয়েস্ট সাবমিট হয়েছে!");
+                closeModal();
+                loadMyFiles();
             }
-            
-            closeModal();
-            loadMyFiles();
         }
 
         function switchTab(tab) {
