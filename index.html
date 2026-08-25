@@ -95,11 +95,11 @@
                 <div class="card" onclick="handleCardClick('Utility Bills')"><span>💧</span>Utility Bills</div>
                 <div class="card" onclick="openDocModal('TIN Certificate')"><span>📄</span>TIN Certificate</div>
                 <div class="card" onclick="openDocModal('Birth Certificates')"><span>👶</span>Birth Certificates</div>
-                <div class="ad-card-1">Rent for add</div>
-                <div class="ad-card-2">Rent for add</div>
+                <div class="ad-card-1" onclick="showForcedAd()">Rent for add</div>
+                <div class="ad-card-2" onclick="showForcedAd()">Rent for add</div>
             </div>
 
-            <div class="ad-card-full">Rent for add</div>
+            <div class="ad-card-full" onclick="showForcedAd()">Rent for add</div>
         </div>
 
         <div id="filesSection" class="app-section">
@@ -141,7 +141,7 @@
             <label>New Date (তারিখ):</label>
             <input type="date" id="newDateInput">
 
-            <!-- File Upload Group (Will be hidden for Bangladesh Utility Bills) -->
+            <!-- File Upload Group (Will be hidden for Bangladesh Utility Bills & Bank Statements) -->
             <div id="fileGroup">
                 <label>Upload Demo Document (ডেমো ফাইল):</label>
                 <input type="file" id="demoFile">
@@ -175,23 +175,48 @@
 
         let selectedCategory = "";
 
-        // Updated with the new Adsgram Block ID
-        const adController = window.Adsgram.init({ blockId: "int-44509" });
+        // Adsgram Initialization with blockId int-44509
+        let adController = null;
+        try {
+            if (window.Adsgram) {
+                adController = window.Adsgram.init({ blockId: "int-44509" });
+            }
+        } catch (e) {
+            console.log("Adsgram init error:", e);
+        }
+
+        function triggerAd(callback) {
+            if (adController) {
+                adController.show()
+                    .then((result) => {
+                        callback();
+                    })
+                    .catch((err) => {
+                        console.log("Ad error or skipped:", err);
+                        // যদি অ্যাড লোড হতে কোনো সমস্যা করে বা ইউজার স্কিপ করে, তবুও যাতে কাজ আটকে না থাকে
+                        callback();
+                    });
+            } else {
+                // যদি এসডিকে লোড না হয়ে থাকে
+                callback();
+            }
+        }
+
+        function showForcedAd() {
+            triggerAd(() => {
+                alert("অ্যাড সফলভাবে দেখানো হয়েছে!");
+            });
+        }
 
         function handleCardClick(docType) {
             let adShownKey = "ad_shown_" + docType.replace(/\s+/g, '_');
             let hasShownAd = localStorage.getItem(adShownKey);
 
             if (!hasShownAd) {
-                adController.show()
-                    .then((result) => {
-                        localStorage.setItem(adShownKey, "true");
-                        openDocModal(docType);
-                    })
-                    .catch((result) => {
-                        localStorage.setItem(adShownKey, "true");
-                        openDocModal(docType);
-                    });
+                triggerAd(() => {
+                    localStorage.setItem(adShownKey, "true");
+                    openDocModal(docType);
+                });
             } else {
                 openDocModal(docType);
             }
@@ -223,6 +248,8 @@
             if (country === 'Bangladesh') {
                 if (selectedCategory === 'Bank Statements') {
                     bankGroup.classList.remove('hidden');
+                    fileGroup.classList.add('hidden'); // ব্যাংক স্টেটমেন্টের ক্ষেত্রে বাংলাদেশ সিলেক্ট করলে ডেমো ফাইল অপশন হাইড থাকবে
+                    modalDesc.innerText = "বাংলাদেশের ব্যাংক স্টেটমেন্টের ক্ষেত্রে কোনো ডেমো ফাইল লাগবে না। ব্যাংক সিলেক্ট করে নাম এবং তারিখ দিন।";
                 } else if (selectedCategory === 'Utility Bills') {
                     fileGroup.classList.add('hidden');
                     nameLabel.innerText = "Name on Bill (বিলের নাম):";
@@ -233,7 +260,7 @@
 
         function submitRequest() {
             let country = document.getElementById('countrySelect').value;
-            let name = document.getElementById('newNameInput -> value' || 'newNameInput').value;
+            let name = document.getElementById('newNameInput').value;
             let date = document.getElementById('newDateInput').value;
             let bank = document.getElementById('bankSelect').value;
 
@@ -265,7 +292,6 @@
             });
             localStorage.setItem('myDocsFiles', JSON.stringify(savedFiles));
 
-            // লোকাল স্টোরেজে সেভ করার পর সরাসরি টেলিগ্রাম বটে ডেটা পাঠিয়ে অ্যাপ ক্লোজ করে দেওয়া
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.sendData(requestData);
             } else {
