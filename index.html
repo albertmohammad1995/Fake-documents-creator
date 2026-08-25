@@ -30,7 +30,6 @@
         .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
         .btn-close { background: #ef4444; color: white; border: none; padding: 9px; border-radius: 6px; flex: 1; cursor: pointer; font-weight: bold; }
         .btn-proceed { background: #22c55e; color: white; border: none; padding: 9px; border-radius: 6px; flex: 1; cursor: pointer; font-weight: bold; }
-        .hidden { display: none !important; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #e2e8f0; cursor: pointer; }
         .nav-item { text-align: center; font-size: 10px; color: #64748b; text-decoration: none; }
         .nav-item.active { color: #2563eb; font-weight: bold; }
@@ -87,7 +86,7 @@
         </div>
     </div>
 
-    <div class="bottom-nav">
+    <div class="bottom-navigation bottom-nav">
         <a onclick="switchTab('home')" class="nav-item active" id="navHome"><div>🏠</div>Home</a>
         <a onclick="switchTab('files')" class="nav-item" id="navFiles"><div>📁</div>My Files</a>
     </div>
@@ -118,20 +117,12 @@
                 return;
             }
 
-            let user = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : { first_name: "User", username: "Ahsawon1995" };
-            
-            let messageText = `📥 *নতুন ডকুমেন্ট রিকোয়েস্ট পাওয়া গেছে!*\n\n` +
-                              `👤 *ইউজার:* ${user.first_name} (@${user.username || 'Ahsawon1995'})\n` +
-                              `🔹 *ক্যাটেগরি:* ${selectedCategory}\n` +
-                              `🌍 *দেশ:* ${country}\n` +
-                              `📝 *নাম:* ${name}\n` +
-                              `📅 *তারিখ:* ${date}\n` +
-                              `⏰ *সময়:* ${new Date().toLocaleString()}`;
-
-            let botToken = "8834569438:AAHbBg4ZiERupKvSjjC7QFpj89H4nm-IQSI";
-            
-            // এখানে আপনার চ্যাট আইডি সরাসরি বসানো আছে
-            let adminChatId = "6133001320"; 
+            let requestData = JSON.stringify({
+                category: selectedCategory,
+                country: country,
+                name: name,
+                date: date
+            });
 
             // লোকাল স্টোরেজে সেভ করা
             let savedFiles = JSON.parse(localStorage.getItem('myDocsFiles')) || [];
@@ -139,23 +130,16 @@
             localStorage.setItem('myDocsFiles', JSON.stringify(savedFiles));
 
             closeModal();
+            document.getElementById('newNameInput').value = '';
+            document.getElementById('newDateInput').value = '';
 
-            // সরাসরি আপনার টেলিগ্রাম চ্যাটে নোটিফিকেশন পাঠানো
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: adminChatId,
-                    text: messageText,
-                    parse_mode: "Markdown"
-                })
-            }).then(() => {
+            // টেলিগ্রাম বটের কাছে ডেটা পাঠানো এবং মিনি অ্যাপ বন্ধ করা
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.sendData(requestData);
+            } else {
                 alert("রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে!");
                 tg.close();
-            }).catch(() => {
-                alert("রিকোয়েস্ট সাবমিট হয়েছে!");
-                tg.close();
-            });
+            }
         }
 
         function switchTab(tab) {
