@@ -7,68 +7,31 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: #f0f4f8; color: #333; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 70px; }
-        
         .container { padding: 12px; max-width: 450px; margin: auto; width: 100%; flex: 1; }
-
         .profile-section { text-align: center; margin-bottom: 12px; margin-top: 10px; }
-        .profile-logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #3b82f6; object-fit: cover; margin: 0 auto 4px; display: block; box-shadow: 0 3px 8px rgba(0,0,0,0.15); background: #ffffff; }
-        .powered-text { font-size: 12px; color: #64748b; font-weight: 600; letter-spacing: 0.5px; }
-
-        .banner { background: linear-gradient(135deg, #1d4ed8, #3b82f6); color: white; padding: 14px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(59,130,246,0.25); }
-        .banner h3 { font-size: 15px; margin-bottom: 4px; font-weight: 700; }
-        .banner p { font-size: 11px; opacity: 0.9; line-height: 1.3; }
-        .banner small { font-size: 10px; opacity: 0.8; }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0px; }
-        .card { background: white; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.04); font-size: 12px; font-weight: 600; color: #1e293b; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75px; cursor: pointer; }
+        .profile-logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #3b82f6; object-fit: cover; margin: 0 auto 4px; display: block; background: #fff; }
+        .powered-text { font-size: 12px; color: #64748b; font-weight: 600; }
+        .banner { background: linear-gradient(135deg, #1d4ed8, #3b82f6); color: white; padding: 14px; border-radius: 12px; margin-bottom: 12px; }
+        .banner h3 { font-size: 15px; margin-bottom: 4px; }
+        .banner p { font-size: 11px; opacity: 0.9; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .card { background: white; padding: 12px; border-radius: 12px; text-align: center; font-size: 12px; font-weight: 600; color: #1e293b; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75px; cursor: pointer; }
         .card span { font-size: 22px; margin-bottom: 4px; }
-
-        .ad-card-1 {
-            background: #ffffff; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(236,72,153,0.3); font-size: 14px; font-weight: bold; color: #ec4899; border: 2px dashed #ec4899; display: flex; align-items: center; justify-content: center; min-height: 75px;
-            animation: gifBlinkPink 0.8s infinite alternate ease-in-out;
-            cursor: pointer;
-        }
-        .ad-card-2 {
-            background: #ffffff; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(59,130,246,0.3); font-size: 14px; font-weight: bold; color: #3b82f6; border: 2px dashed #3b82f6; display: flex; align-items: center; justify-content: center; min-height: 75px;
-            animation: gifBlinkBlue 0.8s infinite alternate ease-in-out;
-            cursor: pointer;
-        }
-
-        .ad-card-full {
-            background: #ffffff; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(236,72,153,0.3); font-size: 15px; font-weight: bold; color: #ec4899; border: 2px dashed #ec4899; display: flex; align-items: center; justify-content: center; min-height: 75px; width: 100%; margin-top: 20px; margin-bottom: 12px;
-            animation: gifBlinkPink 0.8s infinite alternate ease-in-out;
-            cursor: pointer;
-        }
-
-        @keyframes gifBlinkPink {
-            0% { transform: scale(1); border-color: #ec4899; box-shadow: 0 0 5px rgba(236,72,153,0.4); background: #fff; }
-            100% { transform: scale(1.02); border-color: #ff007f; box-shadow: 0 0 15px rgba(236,72,153,0.8); background: #fdf2f8; }
-        }
-        @keyframes gifBlinkBlue {
-            0% { transform: scale(1); border-color: #3b82f6; box-shadow: 0 0 5px rgba(59,130,246,0.4); background: #fff; }
-            100% { transform: scale(1.02); border-color: #0066ff; box-shadow: 0 0 15px rgba(59,130,246,0.8); background: #eff6ff; }
-        }
-
         .app-section { display: none; }
         .app-section.active { display: block; }
-
         .file-item { background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
-        .modal-content { background: white; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: white; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
         .modal-content h3 { font-size: 16px; margin-bottom: 8px; color: #1e293b; }
-        .modal-content p { font-size: 12px; color: #64748b; margin-bottom: 10px; line-height: 1.3; }
         .modal-content label { font-size: 11px; font-weight: bold; display: block; margin-top: 8px; color: #334155; }
         .modal-content select, .modal-content input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; }
         .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-close { background: #ef4444; color: white; border: none; padding: 9px; border-radius: 6px; flex: 1; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .btn-proceed { background: #22c55e; color: white; border: none; padding: 9px; border-radius: 6px; flex: 1; cursor: pointer; font-weight: bold; font-size: 13px; }
-
+        .btn-close { background: #ef4444; color: white; border: none; padding: 9px; border-radius: 6px; flex: 1; cursor: pointer; font-weight: bold; }
+        .btn-proceed { background: #22c55e; color: white; border: none; padding: 9px; border-radius: 6px; flex: 1; cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #e2e8f0; box-shadow: 0 -2px 5px rgba(0,0,0,0.04); cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #e2e8f0; cursor: pointer; }
         .nav-item { text-align: center; font-size: 10px; color: #64748b; text-decoration: none; }
         .nav-item.active { color: #2563eb; font-weight: bold; }
         .nav-item div { font-size: 16px; margin-bottom: 2px; }
@@ -80,25 +43,18 @@
         <div id="homeSection" class="app-section active">
             <div class="profile-section">
                 <img src="https://lh3.googleusercontent.com/d/1RD7n4OFI_snC8996JEHZahYD1NCWyX1U" alt="Logo" class="profile-logo">
-                <div class="powered-text">Powered by</div>
+                <div class="powered-text">Powered by @Ahsawon1995</div>
             </div>
-
             <div class="banner">
                 <h3>Create Your Own Fake Document.</h3>
                 <p>Bank Statement, Utility Bill, TIN, Birth Certificate, and more.</p>
-                <small>Generate Custom Documents Quickly and Securely for Personal Records</small>
             </div>
-
             <div class="grid">
-                <div class="card" onclick="handleCardClick('Bank Statements')"><span>🏛️</span>Bank Statements</div>
-                <div class="card" onclick="handleCardClick('Utility Bills')"><span>💧</span>Utility Bills</div>
+                <div class="card" onclick="openDocModal('Bank Statements')"><span>🏛️</span>Bank Statements</div>
+                <div class="card" onclick="openDocModal('Utility Bills')"><span>💧</span>Utility Bills</div>
                 <div class="card" onclick="openDocModal('TIN Certificate')"><span>📄</span>TIN Certificate</div>
                 <div class="card" onclick="openDocModal('Birth Certificates')"><span>👶</span>Birth Certificates</div>
-                <div class="ad-card-1" onclick="showForcedAd()">Rent for add</div>
-                <div class="ad-card-2" onclick="showForcedAd()">Rent for add</div>
             </div>
-
-            <div class="ad-card-full" onclick="showForcedAd()">Rent for add</div>
         </div>
 
         <div id="filesSection" class="app-section">
@@ -112,37 +68,17 @@
     <div id="docModal" class="modal">
         <div class="modal-content">
             <h3 id="modalTitle">Document Request</h3>
-            <p id="modalDesc">আপনার দেশের অরিজিনাল একটি ডেমো ডকুমেন্ট দিন, যাতে সেই ডকুমেন্টের নাম এবং তারিখ পরিবর্তন করে আপনার তথ্য বসিয়ে দেওয়া যায়।</p>
-            
             <label>Select Country / দেশ নির্বাচন করুন:</label>
-            <select id="countrySelect" onchange="handleCountryChange()">
+            <select id="countrySelect">
                 <option value="Bangladesh">🇧🇩 বাংলাদেশ (Bangladesh)</option>
                 <option value="USA">🇺🇸 যুক্তরাষ্ট্র (United States)</option>
-                <option value="UK">🇬🇧 যুক্তরাজ্য (United Kingdom)</option>
-                <option value="Canada">🇨🇦 কানাডা (Canada)</option>
-                <option value="India">🇮🇳 ভারত (India)</option>
             </select>
 
-            <div id="bankGroup" class="hidden">
-                <label>Select Bank / ব্যাংক নির্বাচন করুন:</label>
-                <select id="bankSelect">
-                    <option value="BRAC Bank">BRAC Bank</option>
-                    <option value="Islami Bank">Islami Bank</option>
-                    <option value="Al-Arafah Islami Bank">Al-Arafah Islami Bank</option>
-                    <option value="The City Bank">The City Bank</option>
-                </select>
-            </div>
-
-            <label id="nameLabel">New Name (নতুন নাম):</label>
-            <input type="text" id="newNameInput" placeholder="Enter name to replace">
+            <label>New Name (নতুন নাম):</label>
+            <input type="text" id="newNameInput" placeholder="Enter name">
 
             <label>New Date (তারিখ):</label>
             <input type="date" id="newDateInput">
-
-            <div id="fileGroup">
-                <label>Upload Demo Document (ডেমো ফাইল):</label>
-                <input type="file" id="demoFile">
-            </div>
 
             <div class="modal-buttons">
                 <button class="btn-close" onclick="closeModal()">Cancel</button>
@@ -152,184 +88,74 @@
     </div>
 
     <div class="bottom-nav">
-        <a onclick="switchTab('home')" class="nav-item active" id="navHome">
-            <div>🏠</div>Home
-        </a>
-        <a onclick="alert('Templates feature coming soon!')" class="nav-item">
-            <div>📑</div>Templates
-        </a>
-        <a onclick="switchTab('files')" class="nav-item" id="navFiles">
-            <div>📁</div>My Files
-        </a>
-        <a onclick="alert('Profile feature coming soon!')" class="nav-item">
-            <div>👤</div>Profile
-        </a>
+        <a onclick="switchTab('home')" class="nav-item active" id="navHome"><div>🏠</div>Home</a>
+        <a onclick="switchTab('files')" class="nav-item" id="navFiles"><div>📁</div>My Files</a>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        try {
-            tg.expand();
-        } catch (e) {
-            console.log("Telegram expand error:", e);
-        }
+        try { tg.expand(); } catch (e) {}
 
         let selectedCategory = "";
-
-        // Adsgram Initialization with blockId int-44509
-        let adController = null;
-        try {
-            if (window.Adsgram) {
-                adController = window.Adsgram.init({ blockId: "int-44509" });
-            }
-        } catch (e) {
-            console.log("Adsgram init error:", e);
-        }
-
-        function triggerAd(callback) {
-            if (adController) {
-                adController.show()
-                    .then((result) => {
-                        callback();
-                    })
-                    .catch((err) => {
-                        console.log("Ad error or skipped:", err);
-                        callback();
-                    });
-            } else {
-                callback();
-            }
-        }
-
-        function showForcedAd() {
-            triggerAd(() => {
-                alert("অ্যাড সফলভাবে দেখানো হয়েছে!");
-            });
-        }
-
-        function handleCardClick(docType) {
-            let adShownKey = "ad_shown_" + docType.replace(/\s+/g, '_');
-            let hasShownAd = localStorage.getItem(adShownKey);
-
-            if (!hasShownAd) {
-                triggerAd(() => {
-                    localStorage.setItem(adShownKey, "true");
-                    openDocModal(docType);
-                });
-            } else {
-                openDocModal(docType);
-            }
-        }
 
         function openDocModal(docType) {
             selectedCategory = docType;
             document.getElementById('modalTitle').innerText = docType + " - Request";
             document.getElementById('docModal').style.display = 'flex';
-            handleCountryChange();
         }
 
         function closeModal() {
             document.getElementById('docModal').style.display = 'none';
         }
 
-        function handleCountryChange() {
-            let country = document.getElementById('countrySelect').value;
-            let bankGroup = document.getElementById('bankGroup');
-            let fileGroup = document.getElementById('fileGroup');
-            let nameLabel = document.getElementById('nameLabel');
-            let modalDesc = document.getElementById('modalDesc');
-
-            bankGroup.classList.add('hidden');
-            fileGroup.classList.remove('hidden');
-            nameLabel.innerText = "New Name (নতুন নাম):";
-            modalDesc.innerText = "আপনার দেশের অরিজিনাল একটি ডেমো ডকুমেন্ট দিন, যাতে সেই ডকুমেন্টের নাম এবং তারিখ পরিবর্তন করে আপনার তথ্য বসিয়ে দেওয়া যায়।";
-
-            if (country === 'Bangladesh') {
-                if (selectedCategory === 'Bank Statements') {
-                    bankGroup.classList.remove('hidden');
-                    fileGroup.classList.add('hidden');
-                    modalDesc.innerText = "বাংলাদেশের ব্যাংক স্টেটমেন্টের ক্ষেত্রে কোনো ডেমো ফাইল লাগবে না। ব্যাংক সিলেক্ট করে নাম এবং তারিখ দিন।";
-                } else if (selectedCategory === 'Utility Bills') {
-                    fileGroup.classList.add('hidden');
-                    nameLabel.innerText = "Name on Bill (বিলের নাম):";
-                    modalDesc.innerText = "বাংলাদেশের ইউটিলিটি বিলের ক্ষেত্রে কোনো ডেমো ফাইল লাগবে না। শুধু নাম এবং তারিখ দিন।";
-                }
-            }
-        }
-
         function submitRequest() {
             let country = document.getElementById('countrySelect').value;
             let name = document.getElementById('newNameInput').value;
             let date = document.getElementById('newDateInput').value;
-            let bank = document.getElementById('bankSelect').value;
 
             if(!name || !date) {
                 alert("দয়া করে নাম এবং তারিখ পূরণ করুন!");
                 return;
             }
 
-            let details = selectedCategory;
-            if(country === 'Bangladesh' && selectedCategory === 'Bank Statements') {
-                details += ` (${bank})`;
-            }
-
-            // ইউজারের তথ্য সংগ্রহ
-            let user = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : { first_name: "User", username: "N/A", id: "N/A" };
+            let user = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : { first_name: "User", username: "Ahsawon1995" };
             
             let messageText = `📥 *নতুন ডকুমেন্ট রিকোয়েস্ট পাওয়া গেছে!*\n\n` +
-                              `👤 *ইউজার:* ${user.first_name} (@${user.username || 'N/A'})\n` +
-                              `🔹 *ক্যাটেগরি:* ${details}\n` +
+                              `👤 *ইউজার:* ${user.first_name} (@${user.username || 'Ahsawon1995'})\n` +
+                              `🔹 *ক্যাটেগরি:* ${selectedCategory}\n` +
                               `🌍 *দেশ:* ${country}\n` +
                               `📝 *নাম:* ${name}\n` +
                               `📅 *তারিখ:* ${date}\n` +
                               `⏰ *সময়:* ${new Date().toLocaleString()}`;
 
-            // আপনার বটের টোকেন এবং আপনার টেলিগ্রাম চ্যাট আইডি এখানে যুক্ত করা হলো যাতে সরাসরি নোটিফিকেশন পান
             let botToken = "8834569438:AAHbBg4ZiERupKvSjjC7QFpj89H4nm-IQSI";
             
-            // আপনার নিজস্ব টেলিগ্রাম আইডি বা এডমিন আইডি এখানে বসাতে পারেন অথবা ইউজারের চ্যাটে পাঠাতে পারেন। 
-            // যেহেতু মিনি অ্যাপ থেকে সরাসরি এডমিনের কাছে পাঠাতে চান, আপনার নিজস্ব চ্যাট আইডি এখানে বসিয়ে দিতে পারেন বা বটের মাধ্যমে ফরওয়ার্ড করতে পারেন।
-            // সহজ উপায়ে ইউজারের টেলিগ্রাম চ্যাট বা বটের নিজস্ব লজিক ব্যবহার করার জন্য Fetch API ব্যবহার করা হচ্ছে:
-            
-            // লোকাল স্টোরেজে ফাইল সেভ করা
+            // এখানে আপনার চ্যাট আইডি সরাসরি বসানো আছে
+            let adminChatId = "6133001320"; 
+
+            // লোকাল স্টোরেজে সেভ করা
             let savedFiles = JSON.parse(localStorage.getItem('myDocsFiles')) || [];
-            savedFiles.push({
-                category: details,
-                country: country,
-                name: name,
-                date: date,
-                time: new Date().toLocaleDateString()
-            });
+            savedFiles.push({ category: selectedCategory, country: country, name: name, date: date });
             localStorage.setItem('myDocsFiles', JSON.stringify(savedFiles));
 
-            // মডাল উইন্ডো বন্ধ করা
             closeModal();
 
-            // ফর্মের ইনপুট ফিল্ডগুলো খালি করা
-            document.getElementById('newNameInput').value = '';
-            document.getElementById('newDateInput').value = '';
-
-            // টেলিগ্রাম মিনি অ্যাপ বন্ধ করে দেওয়া এবং নোটিফিকেশনের জন্য ডেটা পাঠানো
-            if (user.id !== "N/A") {
-                // বটের টোকেন দিয়ে সরাসরি ইউজারের চ্যাটে কনফার্মেশন বা এডমিনের কাছে পাঠানোর ব্যবস্থা
-                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: user.id, // এটি ইউজারের নিজের চ্যাটে বা আপনি চাইলে আপনার এডমিন আইডি বসাতে পারেন
-                        text: messageText,
-                        parse_mode: "Markdown"
-                    })
-                }).then(() => {
-                    tg.close();
-                }).catch(() => {
-                    tg.close();
-                });
-            } else {
-                alert("আপনার রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে এবং মাই ফাইলসে সেভ করা হয়েছে!");
-                loadMyFiles();
+            // সরাসরি আপনার টেলিগ্রাম চ্যাটে নোটিফিকেশন পাঠানো
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: adminChatId,
+                    text: messageText,
+                    parse_mode: "Markdown"
+                })
+            }).then(() => {
+                alert("রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে!");
                 tg.close();
-            }
+            }).catch(() => {
+                alert("রিকোয়েস্ট সাবমিট হয়েছে!");
+                tg.close();
+            });
         }
 
         function switchTab(tab) {
@@ -355,23 +181,13 @@
         function loadMyFiles() {
             let filesList = document.getElementById('filesList');
             let savedFiles = JSON.parse(localStorage.getItem('myDocsFiles')) || [];
-
             if(savedFiles.length === 0) {
                 filesList.innerHTML = `<p style="font-size: 13px; color: #64748b; text-align: center; margin-top: 30px;">আপনার কোনো ফাইল সেভ করা নেই।</p>`;
                 return;
             }
-
             let html = "";
             savedFiles.forEach((file) => {
-                html += `
-                    <div class="file-item">
-                        <div>
-                            <strong>${file.category} (${file.country})</strong><br>
-                            <small style="color: #64748b;">Name: ${file.name} | Date: ${file.date}</small>
-                        </div>
-                        <span style="color: #22c55e; font-weight: bold; font-size: 12px;">Saved ✓</span>
-                    </div>
-                `;
+                html += `<div class="file-item"><div><strong>${file.category}</strong><br><small>${file.name} | ${file.date}</small></div><span style="color: #22c55e;">Saved ✓</span></div>`;
             });
             filesList.innerHTML = html;
         }
