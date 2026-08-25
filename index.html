@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Adsgram SDK Script -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #f0f4f8; color: #333; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 70px; }
@@ -89,8 +91,8 @@
             </div>
 
             <div class="grid">
-                <div class="card" onclick="openDocModal('Bank Statements')"><span>🏛️</span>Bank Statements</div>
-                <div class="card" onclick="openDocModal('Utility Bills')"><span>💧</span>Utility Bills</div>
+                <div class="card" onclick="handleCardClick('Bank Statements')"><span>🏛️</span>Bank Statements</div>
+                <div class="card" onclick="handleCardClick('Utility Bills')"><span>💧</span>Utility Bills</div>
                 <div class="card" onclick="openDocModal('TIN Certificate')"><span>📄</span>TIN Certificate</div>
                 <div class="card" onclick="openDocModal('Birth Certificates')"><span>👶</span>Birth Certificates</div>
                 <div class="ad-card-1">Rent for add</div>
@@ -173,11 +175,34 @@
 
         let selectedCategory = "";
 
+        // Adsgram Controller Setup with your Block ID: int-44438
+        const adController = window.Adsgram.init({ blockId: "int-44438" });
+
+        // Function to handle first-time click ad show for Bank & Utility
+        function handleCardClick(docType) {
+            let adShownKey = "ad_shown_" + docType.replace(/\s+/g, '_');
+            let hasShownAd = localStorage.getItem(adShownKey);
+
+            if (!hasShownAd) {
+                adController.show()
+                    .then((result) => {
+                        localStorage.setItem(adShownKey, "true");
+                        openDocModal(docType);
+                    })
+                    .catch((result) => {
+                        localStorage.setItem(adShownKey, "true");
+                        openDocModal(docType);
+                    });
+            } else {
+                openDocModal(docType);
+            }
+        }
+
         function openDocModal(docType) {
             selectedCategory = docType;
             document.getElementById('modalTitle').innerText = docType + " - Request";
             document.getElementById('docModal').style.display = 'flex';
-            handleCountryChange(); // Trigger check on open
+            handleCountryChange();
         }
 
         function closeModal() {
@@ -191,7 +216,6 @@
             let nameLabel = document.getElementById('nameLabel');
             let modalDesc = document.getElementById('modalDesc');
 
-            // Reset visibility
             bankGroup.classList.add('hidden');
             fileGroup.classList.remove('hidden');
             nameLabel.innerText = "New Name (নতুন নাম):";
@@ -201,7 +225,7 @@
                 if (selectedCategory === 'Bank Statements') {
                     bankGroup.classList.remove('hidden');
                 } else if (selectedCategory === 'Utility Bills') {
-                    fileGroup.classList.add('hidden'); // No file upload for Bangladesh Utility Bill
+                    fileGroup.classList.add('hidden');
                     nameLabel.innerText = "Name on Bill (বিলের নাম):";
                     modalDesc.innerText = "বাংলাদেশের ইউটিলিটি বিলের ক্ষেত্রে কোনো ডেমো ফাইল লাগবে না। শুধু নাম এবং তারিখ দিন।";
                 }
@@ -213,7 +237,6 @@
             let name = document.getElementById('newNameInput').value;
             let date = document.getElementById('newDateInput').value;
             let bank = document.getElementById('bankSelect').value;
-            let fileInput = document.getElementById('demoFile').files[0];
 
             if(!name || !date) {
                 alert("দয়া করে নাম এবং তারিখ পূরণ করুন!");
@@ -225,18 +248,32 @@
                 details += ` (${bank})`;
             }
 
+            // Telegram Bot এ ডেটা পাঠানোর জন্য প্যাকেট তৈরি
+            let requestData = JSON.stringify({
+                category: details,
+                country: country,
+                name: name,
+                date: date,
+                time: new Date().toLocaleString()
+            });
+
+            // Local storage এও সেভ রাখা
             let savedFiles = JSON.parse(localStorage.getItem('myDocsFiles')) || [];
-            let newFile = {
+            savedFiles.push({
                 category: details,
                 country: country,
                 name: name,
                 date: date,
                 time: new Date().toLocaleDateString()
-            };
-            savedFiles.push(newFile);
+            });
             localStorage.setItem('myDocsFiles', JSON.stringify(savedFiles));
 
-            alert("It will take from 5 to 30 minutes to complete the task. Once the task is finished, the document will be sent to you automatically.");
+            // টেলিগ্রাম বটে ডেটা সেন্ড করা
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.sendData(requestData);
+            } else {
+                alert("It will take from 5 to 30 minutes to complete the task.");
+            }
             
             closeModal();
             loadMyFiles();
@@ -272,7 +309,7 @@
             }
 
             let html = "";
-            savedFiles.forEach((file, index) => {
+            savedFiles.forEach((file) => {
                 html += `
                     <div class="file-item">
                         <div>
