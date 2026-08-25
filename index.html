@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App</title>
+    <title>Documents Creator</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
@@ -20,9 +20,9 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .card { background: white; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.04); font-size: 12px; font-weight: 600; color: #1e293b; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75px; cursor: pointer; }
         .card span { font-size: 22px; margin-bottom: 4px; }
-        .ad-card-1 { background: #ffffff; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(236,72,153,0.3); font-size: 14px; font-weight: bold; color: #ec4899; border: 2px dashed #ec4899; display: flex; align-items: center; justify-content: center; min-height: 75px; animation: gifBlinkPink 0.8s infinite alternate ease-in-out; cursor: pointer; }
-        .ad-card-2 { background: #ffffff; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(59,130,246,0.3); font-size: 14px; font-weight: bold; color: #3b82f6; border: 2px dashed #3b82f6; display: flex; align-items: center; justify-content: center; min-height: 75px; animation: gifBlinkBlue 0.8s infinite alternate ease-in-out; cursor: pointer; }
-        .ad-card-full { background: #ffffff; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(236,72,153,0.3); font-size: 15px; font-weight: bold; color: #ec4899; border: 2px dashed #ec4899; display: flex; align-items: center; justify-content: center; min-height: 75px; width: 100%; margin-top: 20px; margin-bottom: 12px; animation: gifBlinkPink 0.8s infinite alternate ease-in-out; cursor: pointer; }
+        .ad-card-1 { background: #ffffff; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(236,72,153,0.3); border: 2px dashed #ec4899; display: flex; align-items: center; justify-content: center; min-height: 75px; animation: gifBlinkPink 0.8s infinite alternate ease-in-out; cursor: pointer; }
+        .ad-card-2 { background: #ffffff; padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(59,130,246,0.3); border: 2px dashed #3b82f6; display: flex; align-items: center; justify-content: center; min-height: 75px; animation: gifBlinkBlue 0.8s infinite alternate ease-in-out; cursor: pointer; }
+        .ad-card-full { background: #ffffff; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(236,72,153,0.3); border: 2px dashed #ec4899; display: flex; align-items: center; justify-content: center; min-height: 75px; width: 100%; margin-top: 20px; margin-bottom: 12px; animation: gifBlinkPink 0.8s infinite alternate ease-in-out; cursor: pointer; }
         @keyframes gifBlinkPink { 0% { transform: scale(1); border-color: #ec4899; } 100% { transform: scale(1.02); border-color: #ff007f; } }
         @keyframes gifBlinkBlue { 0% { transform: scale(1); border-color: #3b82f6; } 100% { transform: scale(1.02); border-color: #0066ff; } }
         .app-section { display: none; }
@@ -54,7 +54,7 @@
             </div>
 
             <div class="banner">
-                <h3>Create Your Own Fake Document.</h3>
+                <h3>Create Your Own Document.</h3>
                 <p>Bank Statement, Utility Bill, TIN, Birth Certificate, and more.</p>
                 <small>Generate Custom Documents Quickly and Securely for Personal Records</small>
             </div>
@@ -64,11 +64,11 @@
                 <div class="card" onclick="handleCardClick('Utility Bills')"><span>💧</span>Utility Bills</div>
                 <div class="card" onclick="openDocModal('TIN Certificate')"><span>📄</span>TIN Certificate</div>
                 <div class="card" onclick="openDocModal('Birth Certificates')"><span>👶</span>Birth Certificates</div>
-                <div class="ad-card-1">Rent for add</div>
-                <div class="ad-card-2">Rent for add</div>
+                <div class="ad-card-1"></div>
+                <div class="ad-card-2"></div>
             </div>
 
-            <div class="ad-card-full">Rent for add</div>
+            <div class="ad-card-full"></div>
         </div>
 
         <div id="filesSection" class="app-section">
@@ -183,6 +183,8 @@
             if (country === 'Bangladesh') {
                 if (selectedCategory === 'Bank Statements') {
                     bankGroup.classList.remove('hidden');
+                    fileGroup.classList.add('hidden');
+                    modalDesc.innerText = "বাংলাদেশের ব্যাংক স্টেটমেন্টের ক্ষেত্রে কোনো ডেমো ফাইল লাগবে না। শুধু ব্যাংক সিলেক্ট করে নাম এবং তারিখ দিন।";
                 } else if (selectedCategory === 'Utility Bills') {
                     fileGroup.classList.add('hidden');
                     nameLabel.innerText = "Name on Bill (বিলের নাম):";
@@ -230,12 +232,10 @@
             document.getElementById('newDateInput').value = '';
 
             if (window.Telegram && window.Telegram.WebApp) {
-                // সরাসরি টেলিগ্রাম ওয়েবঅ্যাপ ডেটা পাঠানোর পাশাপাশি নিশ্চিত করার জন্য চ্যাটলিংক বা সেন্ডডাটা ব্যবহার
                 window.Telegram.WebApp.sendData(requestData);
-                
                 setTimeout(() => {
                     window.Telegram.WebApp.close();
-                }, 400);
+                }, 500);
             } else {
                 alert("আপনার রিকোয়েস্ট সাবমিট হয়েছে!");
                 loadMyFiles();
